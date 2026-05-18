@@ -39,7 +39,6 @@ class Commande
     {
         $this->ligneCommandes = new ArrayCollection();
     }
-
     public function getId(): ?int
     {
         return $this->id;

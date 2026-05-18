@@ -9,3 +9,7 @@
 
 controllers:
     resource: routing.controllers
+
+admin_dashboard_direct:
+    path: /admin_dashboard
+    controller: App\Controller\AdminController::dashboard

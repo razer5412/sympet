@@ -1,0 +1,14 @@
+{% extends 'admin/base.html.twig' %}
+{% block topbar_title %}{{ titre }}{% endblock %}
+{% block body %}
+<div class="p-4" style="max-width:400px;">
+    <h2 class="fw-bold mb-4">{{ titre }}</h2>
+    {{ form_start(form) }}
+        <div class="mb-3">
+            {{ form_label(form.nom, 'Nom', {label_attr: {style: 'color:#aaa; font-size:13px;'}}) }}
+            {{ form_widget(form.nom, {attr: {style: 'background:#1a1a1a; border:1px solid #333; color:#fff; border-radius:8px; padding:10px 14px; width:100%;'}}) }}
+        </div>
+        <button type="submit" class="btn" style="background:#1D9E75; color:#fff;">Enregistrer</button>
+    {{ form_end(form) }}
+</div>
+{% endblock %}

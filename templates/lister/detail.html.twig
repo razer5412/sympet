@@ -1,0 +1,56 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ produit.nom }} – SymPET{% endblock %}
+
+{% block body %}
+<div class="container py-5">
+
+    {# Retour #}
+    <a href="{{ path('app_lister') }}" style="color:#1D9E75; text-decoration:none;">
+        ← Retour aux produits
+    </a>
+    <div class="row mt-4 g-5">
+
+        {# Image #}
+        <div class="col-md-5">
+            <div class="d-flex align-items-center justify-content-center"
+                 style="height:350px; background:#111; border:1px solid #222;
+                        border-radius:16px; font-size:6rem;">
+                <img src="{{ produit.image }}" width="120">
+            </div>
+        </div>
+
+        {# Infos #}
+        <div class="col-md-7">
+
+            {% if produit.categorie %}
+                <span class="badge mb-3" style="background:#1D9E75; font-size:13px;">
+                    {{ produit.categorie.nom }}
+                </span>
+            {% endif %}
+
+            <h1 class="fw-bold mb-3">{{ produit.nom }}</h1>
+
+            <p style="color:#aaa; line-height:1.8;">{{ produit.description }}</p>
+
+            <hr style="border-color:#222; margin:24px 0;">
+
+            {# Prix + Stock #}
+            <div class="d-flex align-items-center gap-4 mb-4">
+                <span style="font-size:2rem; font-weight:700; color:#1D9E75;">
+                    {{ produit.prix|number_format(2, ',', ' ') }} TND
+                </span>
+                <span class="badge" style="font-size:14px;
+                    background:{{ produit.stock > 0 ? '#1D9E75' : '#dc3545' }};">
+                    {{ produit.stock > 0 ? '✓ En stock (' ~ produit.stock ~ ')' : '✗ Rupture de stock' }}
+                </span>
+            </div>
+
+            {# Bouton #}
+            <a href="{{ path('cart_add', {id: produit.id}) }}"class="btn w-100" style="background:#1D9E75; color:#fff;">🛒 Ajouter au panier</a>
+
+        </div>
+    </div>
+
+</div>
+{% endblock %}

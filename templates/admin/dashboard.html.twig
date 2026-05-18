@@ -1,0 +1,160 @@
+{% extends 'admin/base.html.twig' %}
+{% block title %}Dashboard – Admin
+{% endblock %}
+
+{% block body %}
+	<div class="p-4">
+
+		<h2 class="fw-bold mb-4">📊 Tableau de bord</h2>
+
+		{# ── KPI Cards ── #}
+		<div class="row g-4 mb-5">
+			<div class="col-md-3">
+				<div class="kpi-card">
+					<div class="kpi-icon">💰</div>
+					<div class="kpi-value">{{ chiffreAffaires|number_format(2, ',', ' ') }}
+						TND</div>
+					<div class="kpi-label">Chiffre d'affaires</div>
+				</div>
+			</div>
+			<div class="col-md-3">
+				<div class="kpi-card">
+					<div class="kpi-icon">📦</div>
+					<div class="kpi-value">{{ totalCommandes }}</div>
+					<div class="kpi-label">Commandes totales</div>
+				</div>
+			</div>
+			<div class="col-md-3">
+				<div class="kpi-card">
+					<div class="kpi-icon">👥</div>
+					<div class="kpi-value">{{ totalClients }}</div>
+					<div class="kpi-label">Clients</div>
+				</div>
+			</div>
+			<div class="col-md-3">
+				<div class="kpi-card">
+					<div class="kpi-icon">🛍️</div>
+					<div class="kpi-value">{{ totalProduits }}</div>
+					<div class="kpi-label">Produits</div>
+				</div>
+			</div>
+		</div>
+
+		{# ── Graphiques ── #}
+		<div class="row g-4 mb-4 justify-content-center">
+    <div class="col-md-8">
+        <div class="chart-card">
+            <h5 class="mb-3">📅 Commandes par mois</h5>
+            <canvas id="commandesChart"></canvas>
+        </div>
+    </div>
+</div>
+
+		<div class="row g-4 justify-content-center">
+			<div class="col-md-6">
+				<div class="chart-card">
+					<h5 class="mb-3">🏆 Produits les plus vendus</h5>
+					<canvas id="produitsChart"></canvas>
+				</div>
+			</div>
+		</div>
+
+	</div>
+
+	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+	<script>
+		const green = '#1D9E75';
+const dark = '#1a1a1a';
+
+// Commandes par mois
+new Chart(document.getElementById('commandesChart'), {
+type: 'line',
+data: {
+labels: {{ commandesParMois|map(c => c.mois)|json_encode|raw }},
+datasets: [
+{
+label: 'Commandes',
+data: {{ commandesParMois|map(c => c.total)|json_encode|raw }},
+borderColor: green,
+backgroundColor: 'rgba(29,158,117,0.1)',
+fill: true,
+tension: 0.4,
+pointBackgroundColor: green
+}
+]
+},
+options: {
+plugins: {
+legend: {
+labels: {
+color: '#fff'
+}
+}
+},
+scales: {
+x: {
+ticks: {
+color: '#aaa'
+},
+grid: {
+color: '#222'
+}
+},
+y: {
+ticks: {
+color: '#aaa'
+},
+grid: {
+color: '#222'
+}
+}
+}
+}
+});
+
+
+// Produits les plus vendus
+new Chart(document.getElementById('produitsChart'), {
+type: 'bar',
+data: {
+labels: {{ produitsLesPlusVendus|map(p => p.nom)|json_encode|raw }},
+datasets: [
+{
+label: 'Quantité vendue',
+data: {{ produitsLesPlusVendus|map(p => p.totalVendu)|json_encode|raw }},
+backgroundColor: 'rgba(29,158,117,0.8)',
+borderRadius: 6
+}
+]
+},
+options: {
+indexAxis: 'y',
+plugins: {
+legend: {
+labels: {
+color: '#fff'
+}
+}
+},
+scales: {
+x: {
+ticks: {
+color: '#aaa'
+},
+grid: {
+color: '#222'
+}
+},
+y: {
+ticks: {
+color: '#aaa'
+},
+grid: {
+color: '#222'
+}
+}
+}
+}
+});
+	</script>
+{% endblock %}

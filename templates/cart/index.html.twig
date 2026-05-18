@@ -1,0 +1,187 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mon Panier{% endblock %}
+
+{% block stylesheets %}
+<style>
+    body {
+        background: #0d0d0d;
+        color: white;
+        font-family: Arial;
+    }
+
+    h2 {
+        text-align: center;
+        margin: 20px 0;
+        color: #1D9E75;
+    }
+
+    .cart-wrapper {
+        max-width: 900px;
+        margin: auto;
+    }
+
+    .cart-item {
+        background: #111;
+        border: 1px solid #222;
+        padding: 20px;
+        border-radius: 15px;
+        margin-bottom: 15px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .cart-left {
+        display: flex;
+        gap: 15px;
+        align-items: center;
+    }
+
+    .cart-left img {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+        border-radius: 10px;
+    }
+
+    .cart-info {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .qty {
+        background: #1D9E75;
+        padding: 4px 10px;
+        border-radius: 20px;
+        width: fit-content;
+    }
+
+    .actions a {
+        margin-left: 8px;
+        padding: 8px 12px;
+        border-radius: 8px;
+        text-decoration: none;
+        color: white;
+        font-size: 13px;
+    }
+
+    .add    { background: #1D9E75; }
+    .minus  { background: #f39c12; }
+    .remove { background: #e74c3c; }
+
+    .summary {
+        background: #111;
+        border: 1px solid #222;
+        padding: 20px;
+        border-radius: 15px;
+        margin-top: 20px;
+        text-align: center;
+    }
+
+    .summary-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-top: 15px;
+    }
+
+    .btn-continue {
+        padding: 10px 20px;
+        background: #444;
+        color: white;
+        border-radius: 10px;
+        text-decoration: none;
+    }
+
+    .btn-order {
+        padding: 10px 20px;
+        background: #1D9E75;
+        color: white;
+        border-radius: 10px;
+        text-decoration: none;
+    }
+
+    .clear {
+        margin-top: 15px;
+        display: inline-block;
+        padding: 10px 15px;
+        background: #e74c3c;
+        color: white;
+        border-radius: 10px;
+        text-decoration: none;
+    }
+
+    .empty {
+        text-align: center;
+        color: #aaa;
+        margin-top: 50px;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+
+    <h2>🛒 Mon Panier</h2>
+
+    <div class="cart-wrapper">
+
+        {% if panier is empty %}
+
+            <p class="empty">Ton panier est vide 😿</p>
+
+        {% else %}
+
+            {% for id, item in panier %}
+                {% if item is iterable %}
+                    <div class="cart-item">
+
+                        <div class="cart-left">
+
+                            {% set imageUrl = item.image ?: null %}
+                            {% if imageUrl is empty %}
+                                <img src="https://via.placeholder.com/80/111111/1D9E75?text=No+Img" alt="Produit">
+                            {% elseif imageUrl starts with '/' or imageUrl starts with 'http' %}
+                                <img src="{{ imageUrl }}" alt="Produit">
+                            {% else %}
+                                <img src="{{ asset(imageUrl) }}" alt="Produit">
+                            {% endif %}
+
+                            <div class="cart-info">
+                                <strong>{{ item.nom }}</strong>
+                                <span>Prix: {{ item.prix|number_format(2, ',', ' ') }} DT</span>
+                                <span class="qty">Qty: {{ item.qty }}</span>
+                                <span>Total: {{ item.total|number_format(2, ',', ' ') }} DT</span>
+                            </div>
+
+                        </div>
+
+                        <div class="actions">
+                            <a class="add"    href="{{ path('cart_add',      {id: id}) }}">+</a>
+                            <a class="minus"  href="{{ path('cart_decrease', {id: id}) }}">-</a>
+                            <a class="remove" href="{{ path('cart_remove',   {id: id}) }}">X</a>
+                        </div>
+
+                    </div>
+                {% endif %}
+            {% endfor %}
+
+            <div class="summary">
+                <h3>Total Articles: {{ totalItems }}</h3>
+                <h3>Total Prix: {{ totalPrix }} DT</h3>
+
+                <div class="summary-buttons">
+                    <a class="btn-continue" href="{{ path('home') }}">← Continuer les achats</a>
+                    <a class="btn-order"    href="{{ path('app_lister') }}">Passer la commande →</a>
+                </div>
+
+                <a class="clear" href="{{ path('cart_clear') }}">Vider le panier</a>
+            </div>
+
+        {% endif %}
+
+    </div>
+
+{% endblock %}
