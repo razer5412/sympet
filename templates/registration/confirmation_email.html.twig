@@ -1,0 +1,13 @@
+<h1>Confirmez votre adresse email</h1>
+
+<p>
+    Merci pour votre inscription sur SymPet.
+</p>
+
+<p>
+    Cliquez sur le lien suivant pour activer votre compte :
+    <br><br>
+    <a href="{{ signedUrl|raw }}">Confirmer mon email</a>
+    <br><br>
+    Ce lien expirera dans {{ expiresAtMessageKey|trans(expiresAtMessageData, 'VerifyEmailBundle') }}.
+</p>

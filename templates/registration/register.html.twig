@@ -1,0 +1,56 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Créer un compte - SymPet{% endblock %}
+
+{% block body %}
+
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 100vh;">
+
+    <div class="card shadow-lg p-4" style="width: 420px; border-radius: 15px; ">
+
+        <h2 class="text-center mb-4">🐾 SymPet Register</h2>
+
+        {{ form_start(registrationForm) }}
+
+        <div class="mb-3">
+            {{ form_label(registrationForm.email, 'Email') }}
+            {{ form_widget(registrationForm.email, {
+                attr: { class: 'form-control', placeholder: 'Entrez votre email' }
+            }) }}
+            {{ form_errors(registrationForm.email) }}
+        </div>
+
+        <div class="mb-3">
+            {{ form_label(registrationForm.plainPassword, 'Mot de passe') }}
+            {{ form_widget(registrationForm.plainPassword, {
+                attr: { class: 'form-control', placeholder: 'Entrez votre mot de passe' }
+            }) }}
+            {{ form_errors(registrationForm.plainPassword) }}
+        </div>
+
+        <div class="form-check mb-3">
+            {{ form_widget(registrationForm.agreeTerms, {
+                attr: { class: 'form-check-input' }
+            }) }}
+            {{ form_label(registrationForm.agreeTerms, "J'accepte les conditions", {
+                label_attr: { class: 'form-check-label' }
+            }) }}
+            {{ form_errors(registrationForm.agreeTerms) }}
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100">
+            Creer mon compte
+        </button>
+
+        <p class="text-center mt-3">
+            Vous avez deja un compte ?
+            <a href="{{ path('app_login') }}">Connexion</a>
+        </p>
+
+        {{ form_end(registrationForm) }}
+
+    </div>
+
+</div>
+
+{% endblock %}

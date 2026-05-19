@@ -1,0 +1,112 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Confirmation de Commande{% endblock %}
+
+{% block body %}
+
+<div class="container py-5">
+
+    <div class="mx-auto text-center" style="max-width: 700px;">
+
+        <div class="display-1 mb-3 text-success">
+            ✅
+        </div>
+
+        <h1 class="text-success fw-bold mb-3">
+            Commande Confirmée !
+        </h1>
+
+        <p class="text-secondary mb-4">
+            Merci pour votre achat !
+        </p>
+
+        <div class="card bg-dark border-success mb-4 text-white shadow">
+            <div class="card-body">
+
+                <div class="d-flex justify-content-between border-bottom py-3">
+                    <span class="text-secondary fw-bold">
+                        Numéro de commande :
+                    </span>
+
+                    <span class="text-success fw-bold">
+                        #{{ commande.id }}
+                    </span>
+                </div>
+
+                <div class="d-flex justify-content-between border-bottom py-3">
+                    <span class="text-secondary fw-bold">
+                        Statut :
+                    </span>
+
+                    <span class="text-success fw-bold">
+                        {{ commande.statut|upper }}
+                    </span>
+                </div>
+
+                <div class="d-flex justify-content-between py-3">
+                    <span class="text-secondary fw-bold">
+                        Date :
+                    </span>
+
+                    <span class="text-success fw-bold">
+                        {{ commande.createdAt|date('d/m/Y H:i') }}
+                    </span>
+                </div>
+
+            </div>
+        </div>
+
+        <h2 class="text-start mb-3 text-white">
+            Détails de la commande :
+        </h2>
+
+        <div class="card bg-dark text-white border-secondary shadow">
+            <div class="card-body">
+
+                {% for ligne in commande.ligneCommandes %}
+
+                    <div class="d-flex justify-content-between align-items-center border-bottom py-3">
+
+                        <div class="flex-grow-1 text-start">
+                            <strong>{{ ligne.produit.nom }}</strong>
+                        </div>
+
+                        <div class="mx-3 text-success fw-bold">
+                            x {{ ligne.quantite }}
+                        </div>
+
+                        <div style="min-width: 100px;" class="text-end">
+                            {{ (ligne.prixUnitaire * ligne.quantite)|number_format(2, ',', ' ') }} DT
+                        </div>
+
+                    </div>
+
+                {% endfor %}
+
+                <div class="d-flex justify-content-between pt-4 mt-3 border-top border-success fs-5 fw-bold text-success">
+                    <span>Total :</span>
+                    <span>{{ commande.total|number_format(2, ',', ' ') }} DT</span>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-center gap-3 mt-4">
+
+            <a class="btn btn-secondary px-4 py-2"
+               href="{{ path('home') }}">
+                ← Accueil
+            </a>
+
+            <a class="btn btn-success px-4 py-2"
+               href="{{ path('app_lister') }}">
+                Continuer les achats →
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

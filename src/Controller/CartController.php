@@ -2,11 +2,15 @@
 
 namespace App\Controller;
 
+use App\Entity\Commande;
+use App\Entity\LigneCommande;
 use App\Repository\ProduitRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class CartController extends AbstractController
 {
@@ -122,5 +126,62 @@ class CartController extends AbstractController
         $session->remove('panier');
 
         return $this->redirectToRoute('cart_index');
+    }
+
+    #[Route('/checkout', name: 'cart_checkout')]
+    #[IsGranted('ROLE_USER')]
+    public function checkout(
+        SessionInterface $session,
+        ProduitRepository $repo,
+        EntityManagerInterface $em
+    ): Response {
+        $sessionPanier = $session->get('panier', []);
+
+        if (empty($sessionPanier)) {
+            $this->addFlash('warning', 'Votre panier est vide');
+            return $this->redirectToRoute('cart_index');
+        }
+
+        $user = $this->getUser();
+        $total = 0;
+        $produits = $repo->findBy(['id' => array_keys($sessionPanier)]);
+
+        $commande = new Commande();
+        $commande->setUser($user);
+        $commande->setStatut('en_attente');
+        $commande->setCreatedAt(new \DateTimeImmutable());
+
+        foreach ($produits as $produit) {
+            $id = $produit->getId();
+            $qty = $sessionPanier[$id];
+            $prix = (float) $produit->getPrix();
+
+            if ($qty > $produit->getStock()) {
+                $this->addFlash('error', "Stock insuffisant pour {$produit->getNom()}");
+                return $this->redirectToRoute('cart_index');
+            }
+
+            $ligne = new LigneCommande();
+            $ligne->setProduit($produit);
+            $ligne->setQuantite($qty);
+            $ligne->setPrixUnitaire((string) $prix);
+            $ligne->setCommande($commande);
+
+            $commande->addLigneCommande($ligne);
+            $total += $prix * $qty;
+
+            $produit->setStock($produit->getStock() - $qty);
+            $em->persist($produit);
+        }
+
+        $commande->setTotal((string) $total);
+        $em->persist($commande);
+        $em->flush();
+
+        $session->remove('panier');
+
+        return $this->render('cart/confirmation.html.twig', [
+            'commande' => $commande,
+        ]);
     }
 }

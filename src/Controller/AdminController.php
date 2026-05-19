@@ -8,6 +8,7 @@ use App\Repository\CommandeRepository;
 use App\Repository\UserRepository;
 use App\Entity\Produit;
 use App\Entity\Categorie;
+use App\Entity\Commande;
 use App\Form\ProduitType;
 use App\Form\CategorieType;
 use Doctrine\ORM\EntityManagerInterface;
@@ -15,6 +16,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/admin')]
 class AdminController extends AbstractController
@@ -175,6 +177,33 @@ class AdminController extends AbstractController
             'confirmees' => $repo->findBy(['statut' => 'confirmée']),
             'livrees'    => $repo->findBy(['statut' => 'livrée']),
         ]);
+    }
+
+    #[Route('/commandes/{id}', name: 'admin_commande_detail')]
+    #[IsGranted('ROLE_ADMIN')]
+    public function commandeDetail(Commande $commande): Response
+    {
+        return $this->render('admin/commandes/detail.html.twig', [
+            'commande' => $commande,
+        ]);
+    }
+
+    #[Route('/commandes/{id}/statut', name: 'admin_commande_statut', methods: ['POST'])]
+    #[IsGranted('ROLE_ADMIN')]
+    public function updateStatut(Commande $commande, Request $request, EntityManagerInterface $em): Response
+    {
+        $statut = $request->request->get('statut');
+        $validStatuts = ['en_attente', 'confirmée', 'livrée', 'annulée'];
+
+        if (in_array($statut, $validStatuts)) {
+            $commande->setStatut($statut);
+            $em->flush();
+            $this->addFlash('success', 'Statut de la commande mis à jour.');
+        } else {
+            $this->addFlash('error', 'Statut invalide.');
+        }
+
+        return $this->redirectToRoute('admin_commande_detail', ['id' => $commande->getId()]);
     }
 
     // ── Utilisateurs ─────────────────────────────────────────────────
